@@ -1,6 +1,5 @@
 Here's an even more relaxed and conversational version of your `README.md`:
 
-```markdown
 # Darna AI: Your Friendly Real Estate Buddy
 
 ## Hey there!
