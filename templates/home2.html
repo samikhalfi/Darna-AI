@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Darna AI - Real Estate Insights</title>
+
+  <!-- Link to your external CSS file -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles2.css') }}">
+</head>
+
+<body>
+  <nav class="nav">
+  </nav>
+  <main>
+    <article style="--index: 0">
+      <div class="article__img">
+        <img src="https://cdn.pixabay.com/photo/2018/10/09/18/03/morocco-3735564_1280.jpg" alt="Moroccan Villa" />
+      </div>
+      <div class="article__info">
+        <h2>House Pricing</h2>
+        <p>Discover insightful analyses of property values in Morocco.</p>
+        <a href="{{ url_for('analysis') }}">Learn More</a>
+      </div>
+    </article>
+    <article style="--index: 1">
+      <div class="article__img">
+        <img src="https://cdn.pixabay.com/photo/2016/11/18/17/46/house-1836070_1280.jpg" alt="Modern Apartment" />
+      </div>
+      <div class="article__info">
+        <h2>AI-Powered Recommendations</h2>
+        <p>Get the best property recommendations tailored to your needs.</p>
+        <a href="{{ url_for('recommendation') }}">Explore</a>
+      </div>
+    </article>
+    <article style="--index: 2">
+      <div class="article__img">
+        <img src="https://cdn.pixabay.com/photo/2016/11/23/14/37/blur-1853262_1280.jpg" alt="Market Trends" />
+      </div>
+      <div class="article__info">
+        <h2>Advanced Market Analysis</h2>
+        <p>AI tools to help you understand market trends and dynamics.</p>
+        <a href="{{ url_for('index') }}">Dashboard</a>
+      </div>
+    </article>
+    <article style="--index: 3">
+      <div class="article__img">
+        <img src="https://cdn.pixabay.com/photo/2020/03/01/18/37/door-4893801_1280.jpg" alt="Luxury Riad" />
+      </div>
+      <div class="article__info">
+        <h2>Personalized Real Estate Solutions</h2>
+        <p>Darna AI adapts to your preferences and goals.</p>
+        <a href="#">Customize</a>
+      </div>
+    </article>
+    <article style="--index: 4">
+      <div class="article__img">
+        <img src="https://cdn.pixabay.com/photo/2014/08/21/12/54/investment-423289_1280.jpg" alt="Investment Opportunities" />
+      </div>
+      <div class="article__info">
+        <h2>For Investors</h2>
+        <p>Make smarter investment decisions with Darna AI.</p>
+        <a href="#">Invest Wisely</a>
+      </div>
+      <footer>
+        <p>&copy; 2024 Darna AI - Shaping the Future</p>
+      </footer>
+    </article>
+  </main>
+
+
+</body>
+
+</html>

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DARNA AI Analytics Dashboard</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <!-- DataTables CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body class="bg-light">
+    <div class="container-fluid py-4">
+        <!-- Navigation Buttons -->
+        <div class="row mb-4">
+            <div class="col">
+                <a href="{{ url_for('analysis') }}" class="btn btn-primary">Go to Analytics</a>
+                <a href="{{ url_for('recommendation') }}" class="btn btn-success">Recommendation</a>
+                <a href="{{ url_for('predict') }}" class="btn btn-warning">Prediction</a>
+            </div>
+        </div>
+        
+        <h1 class="text-center mb-4">Real Estate Analytics</h1>
+        
+        <!-- Metrics -->
+        <div class="row">
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <div class="metric-label">Total Properties</div>
+                    <div class="metric-value" id="total-properties">-</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <div class="metric-label">Average Price</div>
+                    <div class="metric-value" id="avg-price">-</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <div class="metric-label">Average Surface</div>
+                    <div class="metric-value" id="avg-surface">-</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <div class="metric-label">Average Rooms</div>
+                    <div class="metric-value" id="avg-rooms">-</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Filters -->
+        <div class="filters mb-4">
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">City</label>
+                    <select class="form-select" id="city-filter">
+                        <option value="">All Cities</option>
+                    </select>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Category</label>
+                    <select class="form-select" id="category-filter">
+                        <option value="">All Categories</option>
+                    </select>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Min Price</label>
+                    <input type="number" class="form-control" id="min-price">
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Max Price</label>
+                    <input type="number" class="form-control" id="max-price">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Properties Table -->
+        <div class="card">
+            <div class="card-body">
+                <table id="properties-table" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>City</th>
+                            <th>Sector</th>
+                            <th>Surface (m²)</th>
+                            <th>Rooms</th>
+                            <th>Bathrooms</th>
+                            <th>Price (MAD)</th>
+                            <th>Link</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <p>&copy; 2024 Darna AI - Shaping the Future</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.1/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap5.min.js"></script>
+    
+    <script>
+        let propertiesData = [];
+        let dataTable;
+
+        // Initialize dashboard
+        function initializeDashboard() {
+            fetch('/api/properties')
+                .then(response => response.json())
+                .then(data => {
+                    propertiesData = data;
+                    initializeFilters(data);
+                    initializeTable(data);
+                    updateMetrics(data);
+                });
+        }
+
+        // Initialize filters
+        function initializeFilters(data) {
+            const cities = [...new Set(data.map(item => item.ville))];
+            const categories = [...new Set(data.map(item => item.Subcategories))];
+            
+            const citySelect = document.getElementById('city-filter');
+            const categorySelect = document.getElementById('category-filter');
+            
+            cities.forEach(city => {
+                const option = new Option(city, city);
+                citySelect.add(option);
+            });
+            
+            categories.forEach(category => {
+                const option = new Option(category, category);
+                categorySelect.add(option);
+            });
+            
+            // Add event listeners
+            ['city-filter', 'category-filter', 'min-price', 'max-price'].forEach(id => {
+                document.getElementById(id).addEventListener('change', filterData);
+            });
+        }
+
+        // Initialize DataTable
+        function initializeTable(data) {
+            dataTable = $('#properties-table').DataTable({
+                data: data,
+                columns: [
+                    { data: 'nom' },
+                    { data: 'Subcategories' },
+                    { data: 'ville' },
+                    { data: 'secteur' },
+                    { 
+                        data: 'Surface totale',
+                        render: (data) => `${data} m²`
+                    },
+                    { data: 'Chambres' },
+                    { data: 'Salle de bain' },
+                    { 
+                        data: 'prix',
+                        render: (data) => new Intl.NumberFormat('fr-MA', {
+                            style: 'currency',
+                            currency: 'MAD',
+                            maximumFractionDigits: 0
+                        }).format(data)
+                    },
+                    {
+                        data: 'link',
+                        render: (data) => `<a href="${data}" target="_blank" class="property-link">View</a>`
+                    }
+                ],
+                order: [[7, 'asc']],
+                pageLength: 10,
+                responsive: true
+            });
+        }
+
+        // Update metrics
+        function updateMetrics(data) {
+            document.getElementById('total-properties').textContent = data.length;
+            
+            const avgPrice = data.reduce((acc, curr) => acc + curr.prix, 0) / data.length;
+            document.getElementById('avg-price').textContent = new Intl.NumberFormat('fr-MA', {
+                style: 'currency',
+                currency: 'MAD',
+                maximumFractionDigits: 0
+            }).format(avgPrice);
+            
+            const avgSurface = data.reduce((acc, curr) => acc + curr['Surface totale'], 0) / data.length;
+            document.getElementById('avg-surface').textContent = `${Math.round(avgSurface)} m²`;
+            
+            const avgRooms = data.reduce((acc, curr) => acc + curr.Chambres, 0) / data.length;
+            document.getElementById('avg-rooms').textContent = avgRooms.toFixed(1);
+        }
+
+        // Filter data
+        function filterData() {
+            const city = document.getElementById('city-filter').value;
+            const category = document.getElementById('category-filter').value;
+            const minPrice = parseFloat(document.getElementById('min-price').value) || 0;
+            const maxPrice = parseFloat(document.getElementById('max-price').value) || Infinity;
+            
+            const filteredData = propertiesData.filter(item => {
+                return (!city || item.ville === city) &&
+                       (!category || item.Subcategories === category) &&
+                       item.prix >= minPrice &&
+                       item.prix <= maxPrice;
+            });
+            
+            dataTable.clear();
+            dataTable.rows.add(filteredData);
+            dataTable.draw();
+            updateMetrics(filteredData);
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', initializeDashboard);
+        document.getElementById('runAnalysisBtn').addEventListener('click', function() {
+        fetch('/analysis')
+            .then(response => response.blob())
+            .then(imageBlob => {
+                // Create a URL for the image blob
+                const imageUrl = URL.createObjectURL(imageBlob);
+                const imgElement = document.getElementById('analysisResult');
+                imgElement.src = imageUrl;
+                imgElement.style.display = 'block';
+            })
+            .catch(error => console.error('Error fetching the analysis image:', error));
+    });
+    </script>
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Price Prediction</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        .custom-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .prediction-card {
+            transition: all 0.3s ease;
+        }
+        .prediction-card:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body class="bg-blue-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-blue-900 mb-2">Property Price Prediction</h1>
+            <p class="text-gray-600">Get accurate price predictions based on property features</p>
+        </div>
+
+        <!-- Input Form -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <form id="predictionForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">City</label>
+                    <select id="ville" name="ville" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                        <!-- Cities will be populated dynamically -->
+                    </select>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">Property Type</label>
+                    <select id="property" name="property" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                        <!-- Property types will be populated dynamically based on city selection -->
+                    </select>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">Surface Area (m²)</label>
+                    <input type="number" id="area" name="area" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">Bedrooms</label>
+                    <input type="number" id="bedrooms" name="bedrooms" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">Bathrooms</label>
+                    <input type="number" id="bathrooms" name="bathrooms" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                </div>
+
+                <div class="flex items-end">
+                    <button type="submit" class="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 transition-colors">
+                        Predict Price
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results" class="hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Prediction Details -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h2 class="text-2xl font-bold text-blue-900 mb-4">Prediction Results</h2>
+                    <div class="space-y-4">
+                        <div class="prediction-card bg-blue-50 p-4 rounded-lg">
+                            <h3 class="text-lg font-semibold text-blue-800">Predicted Price</h3>
+                            <p id="predictedPrice" class="text-3xl font-bold text-blue-600"></p>
+                        </div>
+                        <div class="prediction-card bg-blue-50 p-4 rounded-lg">
+                            <h3 class="text-lg font-semibold text-blue-800">Prediction Accuracy</h3>
+                            <p id="accuracy" class="text-lg text-blue-600"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visualization -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h2 class="text-2xl font-bold text-blue-900 mb-4">Price Analysis</h2>
+                    <img id="predictionPlot" class="w-full h-auto rounded-lg" alt="Price prediction visualization">
+                </div>
+            </div>
+
+            <!-- Similar Properties -->
+            <div class="mt-8 bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-2xl font-bold text-blue-900 mb-4">Similar Properties</h2>
+                <div id="similarProperties" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Similar properties will be populated dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function to load property types based on selected city
+        function loadPropertyTypes(city) {
+            $.get(`/api/properties_by_city/${city}`, function(propertyTypes) {
+                const propertySelect = $('#property');
+                propertySelect.empty();
+                propertyTypes.forEach(type => {
+                    propertySelect.append(`<option value="${type}">${type}</option>`);
+                });
+            });
+        }
+
+        // Populate cities dropdown on page load
+        $.get('/api/cities', function(cities) {
+            const villeSelect = $('#ville');
+            cities.forEach(city => {
+                villeSelect.append(`<option value="${city}">${city}</option>`);
+            });
+            // Load property types for the first city
+            if (cities.length > 0) {
+                loadPropertyTypes(cities[0]);
+            }
+        });
+
+        // Update property types when city changes
+        $('#ville').on('change', function() {
+            loadPropertyTypes($(this).val());
+        });
+
+        // Handle form submission
+        $('#predictionForm').on('submit', function(e) {
+            e.preventDefault();
+            const ville = $('#ville').val();
+            const property = $('#property').val();
+            const area = $('#area').val();
+            const bedrooms = $('#bedrooms').val();
+            const bathrooms = $('#bathrooms').val();
+
+            // Show loading state
+            $('#results').addClass('hidden');
+
+            // Make prediction request
+            $.get(`/plot/enhanced_prediction/${ville}/${property}/${area}/${bedrooms}/${bathrooms}`, function(response) {
+                // Update results
+                $('#predictedPrice').text(`${new Intl.NumberFormat().format(response.prediction.toFixed(2))} MAD`);
+                $('#accuracy').text(`RMSE: ${response.rmse.toFixed(2)}`);
+                $('#predictionPlot').attr('src', response.plot);
+
+                // Populate similar properties
+                const similarPropertiesContainer = $('#similarProperties');
+                similarPropertiesContainer.empty();
+
+                response.similar_properties.forEach(property => {
+                    similarPropertiesContainer.append(`
+                        <div class="prediction-card bg-blue-50 p-4 rounded-lg">
+                            <h3 class="font-semibold text-blue-800">${property.secteur}</h3>
+                            <p class="text-gray-600">Surface: ${property['Surface totale']} m²</p>
+                            <p class="text-gray-600">Bedrooms: ${property.Chambres}</p>
+                            <p class="text-gray-600">Bathrooms: ${property['Salle de bain']}</p>
+                            <p class="text-lg font-bold text-blue-600 mt-2">${new Intl.NumberFormat().format(property.prix)} MAD</p>
+                        </div>
+                    `);
+                });
+
+                // Show results
+                $('#results').removeClass('hidden');
+            }).fail(function(error) {
+                alert('Error making prediction. Please try again.');
+                console.error(error);
+            });
+        });
+    </script>
+</body>
+</html>

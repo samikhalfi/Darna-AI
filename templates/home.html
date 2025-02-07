@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<body>
+
+
+  <div class="content-wrap">
+    <header>
+      
+      <h1 class="fluid">
+        Let's
+        <br /><br />
+        Predict . . .
+        <br />
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Darna AI - Real Estate Insights</title>
+
+        <!-- Link to your external CSS file -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/styles1.css') }}">
+    </header>
+    <main>
+      <section>
+        <div class="content">
+          <div class="grid">
+            <div class="layer">
+              <div>
+                <img src="https://static01.nyt.com/images/2012/01/17/greathomesanddestinations/20110122IHHMorocco-slide-5742/20110122IHHMorocco-slide-5742-jumbo.jpg?quality=75&auto=webp&disable=upscale" alt="" />
+              </div>
+              <div>
+                <img src="https://images.pexels.com/photos/2462015/pexels-photo-2462015.jpeg?auto=compress&cs=tinysrgb&w=400" alt="" />
+              </div>
+              <div>
+                <img src="https://t4.ftcdn.net/jpg/08/59/56/49/360_F_859564940_JP17zvjjk3jtPvwbZ3bOlsPCRxPDaPF5.jpg" alt="" />
+              </div>
+              <div>
+                <img src="https://weberdesigngroup.com/wp-content/uploads/2020/06/Morocco-Plan-Front-Elevation-scaled.jpg" alt="" />
+              </div>
+              <div>
+                <img src="https://img-v2.gtsstatic.net/reno/imagereader.aspx?imageurl=https%3A%2F%2Fsir.azureedge.net%2F1243i215%2Fb55cymhrwxf7m26q8c7fps9587i215&option=N&h=472&permitphotoenlargement=false" alt="" />
+              </div>
+              <div>
+                <img src="https://images.pexels.com/photos/2121121/pexels-photo-2121121.jpeg?auto=compress&cs=tinysrgb&w=400" alt="" />
+              </div>
+            </div>
+            <div class="layer">
+              <div>
+                <img src="https://images.pexels.com/photos/1546166/pexels-photo-1546166.jpeg?auto=compress&cs=tinysrgb&w=400" alt="" />
+              </div>
+              <div>
+                <img src="https://images.pexels.com/photos/1115804/pexels-photo-1115804.jpeg?auto=compress&cs=tinysrgb&w=400" alt="" />
+              </div>
+              <div>
+                <img src="https://images.pexels.com/photos/731082/pexels-photo-731082.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="" />
+              </div>
+              <div>
+                <img src="https://images.pexels.com/photos/2121121/pexels-photo-2121121.jpeg?auto=compress&cs=tinysrgb&w=400" alt="" />
+              </div>
+              <div>
+                <img src="https://images.pexels.com/photos/101808/pexels-photo-101808.jpeg?auto=compress&cs=tinysrgb&w=400" alt="" />
+              </div>
+              <div>
+                <img src="https://susinsight.com/wp-content/uploads/2024/07/pixelcut-export-3-scaled.jpeg" alt="" />
+              </div>
+            </div>
+            <div class="layer">
+              <div>
+                <img src="https://static01.nyt.com/images/2013/05/22/greathomesanddestinations/22-GH-IHH-SPAN/22-GH-IHH-SPAN-articleLarge.jpg?quality=75&auto=webp&disable=upscale" alt="" />
+              </div>
+              <div>
+                <img src="https://static01.nyt.com/images/2022/08/24/realestate/24IHH-Morocco-slide-S09I/24IHH-Morocco-slide-S09I-articleLarge.jpg?quality=75&auto=webp&disable=upscale" alt="" />
+              </div>
+            </div>
+            <div class="scaler">
+              <img src="https://hensleyhomes.com/wp-content/uploads/2022/04/IMG_6215-1-scaled.jpg" alt=""/>
+              <!--<img class="logo" src="{{ url_for('static', filename='icons/fav.ico') }}" href="#" />-->
+            </div>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h2 class="fluid">Unleash the power of AI</h2>
+        <br />
+        <img class="logo" src="{{ url_for('static', filename='icons/png.png') }}" href="#" />
+        <div id="container">
+          <a href="{{ url_for('home2') }}" class="no-underline">
+            <span class="Btn">Learn More</span>
+          </a>
+        </div>
+      </section>
+    </main>
+  </div>
+  <footer>
+    <p>&copy; 2024 Darna AI - Shaping the Future</p>
+  </footer>
+
+
+
+
+  <script>
+    gsap
+  .timeline({
+    scrollTrigger: {
+      trigger: 'main section:first-of-type',
+      start: 'top -10%',
+      end: 'bottom 80%',
+      scrub: true,
+    },
+  })
+  .from(
+    '.scaler img',
+    {
+      height: window.innerHeight - 32,
+      ease: 'power1.inOut',
+    }
+  )
+  .from(
+    '.scaler img',
+    {
+      width: window.innerWidth - 32,
+      ease: 'power2.inOut',
+    },
+    0
+  )
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DARNA AI Analytics - Visualizations</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.1/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        .metric-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .plot-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            transition: transform 0.2s;
+        }
+        
+        .plot-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .plot-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .plot-image {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+        
+        .nav-pills .nav-link.active {
+            background-color: #0d6efd;
+        }
+        
+        .nav-pills .nav-link {
+            color: #333;
+            margin: 0 5px;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container-fluid py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Real Estate Analytics - Visualizations</h1>
+            <a href="{{ url_for('index') }}" class="btn btn-primary">Back to Dashboard</a>
+        </div>
+
+        <!-- Navigation Pills -->
+        <ul class="nav nav-pills mb-4">
+            <li class="nav-item">
+                <a class="nav-link active" href="#price-analysis">Price Analysis</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#distribution">Distribution Analysis</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#correlations">Statistiques</a>
+            </li>
+        </ul>
+
+        <!-- Price Analysis Section -->
+        <section id="price-analysis">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="plot-card">
+                        <div class="plot-title">Average Price by Category</div>
+                        <img src="/plot/price_by_categories" class="plot-image" alt="Price by Categories">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="plot-card">
+                        <div class="plot-title">Average Price by Subcategory</div>
+                        <img src="/plot/price_by_subcategories" class="plot-image" alt="Price by Subcategories">
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="plot-card">
+                        <div class="plot-title">Average Price by City</div>
+                        <img src="/plot/price_by_ville" class="plot-image" alt="Price by City">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Distribution Analysis Section -->
+        <section id="distribution" class="d-none">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="plot-card">
+                        <div class="plot-title">Price Distribution by Number of Rooms</div>
+                        <img src="/plot/price_by_rooms" class="plot-image" alt="Price by Rooms">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="plot-card">
+                        <div class="plot-title">Price Distribution by Number of Bathrooms</div>
+                        <img src="/plot/price_by_bathrooms" class="plot-image" alt="Price by Bathrooms">
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="plot-card">
+                        <div class="plot-title">Price vs Total Surface Area</div>
+                        <img src="/plot/price_by_surface" class="plot-image" alt="Price by Surface">
+                    </div>
+                </div>
+        
+            </div>
+        </section>
+
+        <!-- Correlations Section -->
+        <section id="correlations" class="d-none">
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="plot-card">
+                        <div class="plot-title">Répartition des Maisons </div>
+                        <img src="/plot/louer_vs_vente/maisons" class="plot-image" alt="maison louer vs vente">
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="plot-card">
+                        <div class="plot-title">Répartition des Appartements </div>
+                        <img src="/plot/louer_vs_vente/appartements" class="plot-image" alt="appartements louer vs vente">
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="plot-card">
+                        <div class="plot-title">Répartition des Villa et Riad </div>
+                        <img src="/plot/louer_vs_vente/villa&riad" class="plot-image" alt="Villa et Riad louer vs vente">
+                    </div>
+                </div>
+                
+            </div>
+            <div class="col-md-3 mb-3">
+                <label class="form-label">City</label>
+                <select class="form-select" id="city-filter">
+                    <!-- Les options seront ajoutées dynamiquement avec JavaScript -->
+                </select>
+            </div>
+            <div class='row'>
+                
+                
+                <div class="col-6">
+                    <div class="plot-card">
+                        <div class="plot-title">Average Rooms by Subcategory</div>
+                        <img id="avg-rooms-plot" src="/plot/avg_rooms_by_subcategory/Casablanca" class="plot-image" alt="">
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="plot-card">
+                        <div class="plot-title">Average Area by Subcategory</div>
+                        <img id="avg-surface-plot" src="/plot/avg_surface_by_subcategory/Casablanca" class="plot-image" alt="">
+                    </div>
+                </div>
+                
+            </div>
+        </section>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.1/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        let cities = ['Casablanca', 'Tanger','Marrakech','Rabat','Agadir', 'Essaouira','Ifrane'];  // Liste des villes disponibles, à remplacer par vos villes réelles
+        
+        // Fonction pour initialiser la liste déroulante des villes
+        function initializeCityFilter() {
+            const citySelect = document.getElementById('city-filter');
+            
+            // Ajout des villes à la liste déroulante
+            cities.forEach(city => {
+                const option = new Option(city.charAt(0).toUpperCase() + city.slice(1), city);
+                citySelect.add(option);
+            });
+
+            // Écouter le changement de sélection de la ville
+            citySelect.addEventListener('change', function() {
+                updatePlot(citySelect.value);  // Met à jour le graphique lorsqu'une ville est sélectionnée
+            });
+        }
+
+        // Fonction pour mettre à jour l'image du graphique
+        function updatePlot(city) {
+            const plotImage = document.getElementById('avg-rooms-plot');
+            const surfaceImage = document.getElementById('avg-surface-plot');
+            plotImage.src = `/plot/avg_rooms_by_subcategory/${city}`;
+            surfaceImage.src= `/plot/avg_surface_by_subcategory/${city}`; // Met à jour l'URL de l'image en fonction de la ville
+        }
+
+        // Initialiser la liste déroulante au chargement de la page
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCityFilter();
+        });
+
+        // Handle navigation
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                // Update active nav link
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                e.target.classList.add('active');
+                
+                // Show corresponding section
+                const targetId = e.target.getAttribute('href').substring(1);
+                document.querySelectorAll('section').forEach(section => {
+                    section.classList.add('d-none');
+                });
+                document.getElementById(targetId).classList.remove('d-none');
+            });
+        });
+
+        // Initialize tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    </script>
+    <footer>
+    <p>&copy; 2024 Darna AI - Shaping the Future</p>
+    </footer>
+</body>
+</html>

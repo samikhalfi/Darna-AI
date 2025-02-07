@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DARNA AI - Property Recommendations</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.1/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        .recommendation-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            transition: transform 0.2s;
+        }
+        
+        .recommendation-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .filter-section {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .results-section {
+            margin-top: 30px;
+        }
+        
+        .property-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .price-tag {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #0d6efd;
+        }
+        
+        .property-features {
+            margin: 15px 0;
+            padding: 0;
+            list-style: none;
+        }
+        
+        .property-features li {
+            margin-bottom: 8px;
+            color: #666;
+        }
+        
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+        .rating-score {
+    color: #ffc107;
+    font-size: 0.9rem;
+    margin-top: 10px;
+        }
+
+        .error-message {
+            display: none;
+            color: #dc3545;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container-fluid py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Property Recommendations</h1>
+            <a href="{{ url_for('index') }}" class="btn btn-primary">Back to Dashboard</a>
+        </div>
+
+        <!-- Filters Section -->
+        <div class="filter-section">
+            <form id="recommendationForm">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Budget (MAD)</label>
+                        <input type="number" class="form-control" id="budget" required>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">City</label>
+                        <select class="form-select" id="ville" required>
+                            <option value="">Select a city</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Minimum Bedrooms</label>
+                        <input type="number" class="form-control" id="chambres" min="1" required>
+                    </div>
+                    <div class="col-md-3 mb-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">Get Recommendations</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div class="loading-spinner" id="loadingSpinner">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">Finding the best properties for you...</p>
+        </div>
+        <div class="error-message" id="errorMessage"></div>
+
+        <!-- Results Section -->
+        <div class="results-section">
+            <div class="row" id="recommendationsContainer">
+                <!-- Results will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.1/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Load cities on page load
+        fetch('/api/cities')
+            .then(response => response.json())
+            .then(cities => {
+                const villeSelect = document.getElementById('ville');
+                cities.forEach((city, index) => {
+                    // Store both city name and index in the option value
+                    const option = new Option(city, city); // Use the city name as the value
+                    villeSelect.add(option);
+                });
+            });
+    
+        // Handle form submission
+        document.getElementById('recommendationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Show loading spinner
+            document.getElementById('loadingSpinner').style.display = 'block';
+            document.getElementById('recommendationsContainer').innerHTML = '';
+            
+            // Get form values
+            const ville = document.getElementById('ville').value; // This will now be the city name
+            const budget = parseInt(document.getElementById('budget').value);
+            const chambres = parseInt(document.getElementById('chambres').value);
+    
+            try {
+                // Make the GET request to the Flask route
+                const response = await fetch(`/plot/recommendation_houcing/${ville}/${budget}/${chambres}`);
+                
+                // Check if the response is okay
+                if (!response.ok) {
+                    throw new Error('Failed to fetch recommendations');
+                }
+                
+                // Parse the JSON response
+                const recommendations = await response.json();
+                
+                // Hide loading spinner
+                document.getElementById('loadingSpinner').style.display = 'none';
+                
+                // Display recommendations
+                document.getElementById('recommendationsContainer').innerHTML = recommendations.map(property => `
+                    <div class="col-md-4 mb-4">
+                        <div class="recommendation-card">
+                            <div class="price-tag">${new Intl.NumberFormat('fr-MA', {
+                                style: 'currency',
+                                currency: 'MAD',
+                                maximumFractionDigits: 0
+                            }).format(property.prix)}</div>
+                            <h5 class="mt-3">${property.nom}</h5>  <!-- Changed from property.Subcategories -->
+                            <ul class="property-features">
+                                <li>📍 ${property.ville}</li>
+                                <li>🛏 ${property.Chambres} Bedrooms</li>
+                                <li>🚿 ${property['Salle de bain']} Bathrooms</li>
+                                <li>📐 ${property['Surface totale']} m²</li>
+                            </ul>
+                            <div class="rating-score">
+                                Match Score: ${property.rating ? (property.rating * 80).toFixed(1) + '%' : '0%'}  <!-- Fixed match score display -->
+                            </div>
+                            <div class="d-grid mt-3">
+                                <a href="${property.link}" target="_blank" class="btn btn-outline-primary">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('loadingSpinner').style.display = 'none';
+                document.getElementById('errorMessage').style.display = 'block';
+                document.getElementById('errorMessage').textContent = 
+                    'An error occurred while fetching recommendations. Please try again.';
+            }
+        });
+    </script>
+    
+    
+    
+</body>
+</html>
