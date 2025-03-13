@@ -70,12 +70,9 @@ We’re always looking to improve. Here’s what we’re planning:
 ## Meet the Team
 
 Darna AI is brought to you by:
-- **Asmaa BAZIGHE**
 - **Sami KHALFI**
+- **Asmaa BAZIGHE**
 
-## License
-
-This project is open-source and available under the [MIT License](LICENSE).
 
 ---
 
